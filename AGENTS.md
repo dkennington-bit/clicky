@@ -8,7 +8,7 @@
 Clicky has two side-by-side desktop implementations:
 
 - **macOS app**: menu bar companion app. Lives entirely in the macOS status bar (no dock icon, no main window). Clicking the menu bar icon opens a custom floating panel with companion voice controls. Uses push-to-talk (ctrl+option) to capture voice input, transcribes it via AssemblyAI streaming, and sends the transcript + a screenshot of the user's screen to Claude. Claude responds with text (streamed via SSE) and voice (ElevenLabs TTS). A blue cursor overlay can fly to and point at UI elements Claude references on any connected monitor.
-- **Windows app**: native WPF tray companion under `windows/Clicky.Windows`. Uses Ctrl+Alt push-to-talk, OpenAI transcription, OpenAI `gpt-5.5` vision/chat through the Responses API, OpenAI `gpt-4o-mini-tts`, Windows Credential Manager for the user's OpenAI key, and transparent topmost WPF overlay windows for the blue cursor.
+- **Windows app**: native WPF tray companion under `windows/Clicky.Windows`. Uses Ctrl+Alt push-to-talk, OpenAI transcription, OpenAI `gpt-5.5` vision/chat through the Responses API, OpenAI `gpt-4o-mini-tts`, a right-click tray voice selector, Windows Credential Manager for the user's OpenAI key, and transparent topmost WPF overlay windows for the blue cursor.
 
 macOS API keys live on a Cloudflare Worker proxy. The Windows rewrite uses a user-provided OpenAI key stored locally in Windows Credential Manager under `Clicky.OpenAI.ApiKey`.
 
@@ -32,7 +32,7 @@ macOS API keys live on a Cloudflare Worker proxy. The Windows rewrite uses a use
 - **Framework**: .NET 8 WPF with Windows Forms `NotifyIcon` for the tray
 - **AI Chat**: OpenAI Responses API using `gpt-5.5` with streamed SSE text and screenshot image inputs
 - **Speech-to-Text**: OpenAI Audio Transcriptions using `gpt-4o-mini-transcribe`
-- **Text-to-Speech**: OpenAI Audio Speech using `gpt-4o-mini-tts` with default voice `alloy`, played with NAudio
+- **Text-to-Speech**: OpenAI Audio Speech using `gpt-4o-mini-tts` with default voice `coral`, selectable from the tray right-click menu and played with NAudio
 - **Screen Capture**: GDI screen capture across all connected Windows displays
 - **Voice Input**: Ctrl+Alt push-to-talk with a low-level keyboard hook and microphone capture via NAudio
 - **Element Pointing**: GPT appends `[POINT:x,y:label:screenN]` tags. The Windows overlay maps screenshot pixels back to monitor pixels and animates the blue cursor.
@@ -97,8 +97,8 @@ Worker vars: `ELEVENLABS_VOICE_ID`
 | `windows/Clicky.Windows/src/Clicky.Windows/UI/OverlayWindowManager.cs` | ~174 | Creates one Windows overlay per monitor, hides overlays during screenshot capture, broadcasts voice state, and routes point tags to the correct screen. |
 | `windows/Clicky.Windows/src/Clicky.Windows/AI/OpenAIConversationClient.cs` | ~129 | Streams OpenAI Responses API output from `gpt-5.5`, parses SSE text deltas, and separates `[POINT:...]` metadata from spoken text. |
 | `windows/Clicky.Windows/src/Clicky.Windows/AI/OpenAITranscriptionClient.cs` | ~53 | Uploads push-to-talk WAV audio to OpenAI `gpt-4o-mini-transcribe`. |
-| `windows/Clicky.Windows/src/Clicky.Windows/AI/OpenAISpeechClient.cs` | ~115 | Sends text to OpenAI `gpt-4o-mini-tts` and plays WAV audio with NAudio. |
-| `windows/Clicky.Windows/src/Clicky.Windows/AI/OpenAIRequestFactory.cs` | ~153 | Builds testable OpenAI request payloads for Responses, transcription, and speech endpoints. |
+| `windows/Clicky.Windows/src/Clicky.Windows/AI/OpenAISpeechClient.cs` | ~115 | Sends text to OpenAI `gpt-4o-mini-tts` and plays MP3 audio with NAudio. |
+| `windows/Clicky.Windows/src/Clicky.Windows/AI/OpenAIRequestFactory.cs` | ~153 | Builds testable OpenAI request payloads for Responses, transcription, and speech endpoints, including supported TTS voices. |
 | `windows/Clicky.Windows/src/Clicky.Windows/AI/PointTagParser.cs` | ~61 | Parses and strips `[POINT:none]`, `[POINT:x,y:label]`, and `[POINT:x,y:label:screenN]` tags. |
 | `windows/Clicky.Windows/src/Clicky.Windows/Audio/MicrophonePushToTalkRecorder.cs` | ~152 | Records microphone audio as WAV while Ctrl+Alt is held and publishes normalized audio levels for the waveform. |
 | `windows/Clicky.Windows/src/Clicky.Windows/Input/GlobalPushToTalkHotkeyListener.cs` | ~133 | Installs the low-level Windows keyboard hook for Ctrl+Alt press/release transitions. |

@@ -11,7 +11,23 @@ public static class OpenAIRequestFactory
     public const string VisionModel = "gpt-5.5";
     public const string TranscriptionModel = "gpt-4o-mini-transcribe";
     public const string SpeechModel = "gpt-4o-mini-tts";
-    public const string DefaultVoice = "alloy";
+    public const string DefaultVoice = "coral";
+    public static IReadOnlyList<string> SupportedVoices { get; } =
+    [
+        "alloy",
+        "ash",
+        "ballad",
+        "coral",
+        "echo",
+        "fable",
+        "nova",
+        "onyx",
+        "sage",
+        "shimmer",
+        "verse",
+        "marin",
+        "cedar"
+    ];
 
     public static HttpRequestMessage CreateVisionRequest(
         string apiKey,
@@ -87,12 +103,16 @@ public static class OpenAIRequestFactory
         return stringBuilder.ToString();
     }
 
-    public static HttpRequestMessage CreateSpeechRequest(string apiKey, string text)
+    public static HttpRequestMessage CreateSpeechRequest(string apiKey, string text, string voice)
     {
+        string selectedVoice = SupportedVoices.Contains(voice, StringComparer.OrdinalIgnoreCase)
+            ? voice.ToLowerInvariant()
+            : DefaultVoice;
+
         var requestBody = new
         {
             model = SpeechModel,
-            voice = DefaultVoice,
+            voice = selectedVoice,
             input = text,
             instructions = CompanionPrompts.SpeechInstructions,
             response_format = "mp3"

@@ -33,6 +33,7 @@ public interface IOpenAISpeechClient
     Task SpeakAsync(
         string apiKey,
         string text,
+        string voice,
         CancellationToken cancellationToken);
 
     void StopPlayback();

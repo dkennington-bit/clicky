@@ -86,6 +86,8 @@ public sealed class ClickyApplicationCoordinator : IDisposable
     {
         trayIconService.TogglePanelRequested += HandleTogglePanelRequested;
         trayIconService.QuitRequested += HandleQuitRequested;
+        trayIconService.VoiceSelected += HandleVoiceSelected;
+        trayIconService.ConfigureVoiceMenu(OpenAIRequestFactory.SupportedVoices, clickyUserSettings.SelectedVoice);
 
         companionPanelWindow.SaveApiKeyRequested += HandleSaveApiKeyRequested;
         companionPanelWindow.DeleteApiKeyRequested += HandleDeleteApiKeyRequested;
@@ -111,6 +113,21 @@ public sealed class ClickyApplicationCoordinator : IDisposable
             ClickyLogger.Info("No OpenAI API key found. Showing setup panel.");
         }
 
+        UpdatePanelState();
+    }
+
+    private void HandleVoiceSelected(object? sender, string selectedVoice)
+    {
+        if (!OpenAIRequestFactory.SupportedVoices.Contains(selectedVoice, StringComparer.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        clickyUserSettings.SelectedVoice = selectedVoice.ToLowerInvariant();
+        userSettingsStore.Save(clickyUserSettings);
+        trayIconService.SetSelectedVoice(clickyUserSettings.SelectedVoice);
+        statusMessage = $"voice: {clickyUserSettings.SelectedVoice}";
+        ClickyLogger.Info($"Selected TTS voice changed to {clickyUserSettings.SelectedVoice}.");
         UpdatePanelState();
     }
 
@@ -354,7 +371,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
 
             statusMessage = "speaking";
             UpdatePanelState();
-            await openAISpeechClient.SpeakAsync(apiKey, visionTurnResult.SpokenResponseText, cancellationToken);
+            await openAISpeechClient.SpeakAsync(apiKey, visionTurnResult.SpokenResponseText, clickyUserSettings.SelectedVoice, cancellationToken);
 
             if (visionTurnResult.PointTagResult.ShouldPoint && clickyUserSettings.IsCursorOverlayEnabled)
             {

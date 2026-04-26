@@ -6,9 +6,11 @@ namespace Clicky.Windows.UI;
 public sealed class TrayIconService : IDisposable
 {
     private readonly WinForms.NotifyIcon notifyIcon;
+    private readonly WinForms.ToolStripMenuItem voiceMenuItem = new("Voice");
 
     public event EventHandler? TogglePanelRequested;
     public event EventHandler? QuitRequested;
+    public event EventHandler<string>? VoiceSelected;
 
     public TrayIconService()
     {
@@ -36,6 +38,30 @@ public sealed class TrayIconService : IDisposable
         notifyIcon.ShowBalloonTip(2500);
     }
 
+    public void ConfigureVoiceMenu(IReadOnlyList<string> supportedVoices, string selectedVoice)
+    {
+        voiceMenuItem.DropDownItems.Clear();
+
+        foreach (string supportedVoice in supportedVoices)
+        {
+            var voiceMenuChoice = new WinForms.ToolStripMenuItem(supportedVoice)
+            {
+                Checked = string.Equals(supportedVoice, selectedVoice, StringComparison.OrdinalIgnoreCase),
+                CheckOnClick = false
+            };
+            voiceMenuChoice.Click += (_, _) => VoiceSelected?.Invoke(this, supportedVoice);
+            voiceMenuItem.DropDownItems.Add(voiceMenuChoice);
+        }
+    }
+
+    public void SetSelectedVoice(string selectedVoice)
+    {
+        foreach (WinForms.ToolStripMenuItem voiceMenuChoice in voiceMenuItem.DropDownItems.OfType<WinForms.ToolStripMenuItem>())
+        {
+            voiceMenuChoice.Checked = string.Equals(voiceMenuChoice.Text, selectedVoice, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     public void Dispose()
     {
         notifyIcon.Visible = false;
@@ -46,6 +72,7 @@ public sealed class TrayIconService : IDisposable
     {
         var contextMenuStrip = new WinForms.ContextMenuStrip();
         contextMenuStrip.Items.Add("Open Clicky", null, (_, _) => TogglePanelRequested?.Invoke(this, EventArgs.Empty));
+        contextMenuStrip.Items.Add(voiceMenuItem);
         contextMenuStrip.Items.Add("Quit", null, (_, _) => QuitRequested?.Invoke(this, EventArgs.Empty));
         return contextMenuStrip;
     }

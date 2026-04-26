@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using Clicky.Windows.AI;
 
 namespace Clicky.Windows.Settings;
 
@@ -40,4 +41,5 @@ public sealed class UserSettingsStore
 public sealed class ClickyUserSettings
 {
     public bool IsCursorOverlayEnabled { get; set; } = true;
+    public string SelectedVoice { get; set; } = OpenAIRequestFactory.DefaultVoice;
 }

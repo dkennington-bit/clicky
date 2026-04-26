@@ -31,6 +31,8 @@ dotnet run --project src\Clicky.Windows\Clicky.Windows.csproj
 
 The app appears in the Windows notification area. Open the panel, save your OpenAI key, then hold **Ctrl+Alt** to talk. The key is stored locally in Windows Credential Manager under `Clicky.OpenAI.ApiKey`.
 
+Right-click the notification-area icon and use **Voice** to switch the OpenAI TTS voice. The default voice is `coral`, and your selection is saved locally in `%APPDATA%\Clicky.Windows\settings.json`.
+
 Runtime logs are written to:
 
 ```powershell
@@ -41,7 +43,7 @@ $env:APPDATA\Clicky.Windows\logs\current.log
 
 - Vision/chat: OpenAI Responses API with `gpt-5.5`
 - Speech-to-text: OpenAI Audio Transcriptions with `gpt-4o-mini-transcribe`
-- Text-to-speech: OpenAI Audio Speech with `gpt-4o-mini-tts`, default voice `alloy`
+- Text-to-speech: OpenAI Audio Speech with `gpt-4o-mini-tts`, default voice `coral`
 
 Run the Windows unit tests with:
 

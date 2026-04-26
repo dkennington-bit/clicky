@@ -29,6 +29,7 @@ public sealed class OpenAISpeechClient : IOpenAISpeechClient, IDisposable
     public async Task SpeakAsync(
         string apiKey,
         string text,
+        string voice,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -38,7 +39,7 @@ public sealed class OpenAISpeechClient : IOpenAISpeechClient, IDisposable
 
         StopPlayback();
 
-        using HttpRequestMessage request = OpenAIRequestFactory.CreateSpeechRequest(apiKey, text);
+        using HttpRequestMessage request = OpenAIRequestFactory.CreateSpeechRequest(apiKey, text, voice);
         using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
         byte[] audioBytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
         ClickyLogger.Info($"OpenAI speech HTTP {(int)response.StatusCode}. MP3 bytes: {audioBytes.Length}.");

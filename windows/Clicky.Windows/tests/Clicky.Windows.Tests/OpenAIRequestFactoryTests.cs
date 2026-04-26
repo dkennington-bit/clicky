@@ -42,15 +42,25 @@ public sealed class OpenAIRequestFactoryTests
     [Fact]
     public async Task CreateSpeechRequestBuildsMiniTtsPayload()
     {
-        using HttpRequestMessage request = OpenAIRequestFactory.CreateSpeechRequest("sk-test", "hello");
+        using HttpRequestMessage request = OpenAIRequestFactory.CreateSpeechRequest("sk-test", "hello", "coral");
 
         string requestBody = await request.Content!.ReadAsStringAsync();
 
         Assert.Equal("https://api.openai.com/v1/audio/speech", request.RequestUri!.ToString());
         Assert.Equal(new AuthenticationHeaderValue("Bearer", "sk-test"), request.Headers.Authorization);
         Assert.Contains("\"model\":\"gpt-4o-mini-tts\"", requestBody);
-        Assert.Contains("\"voice\":\"alloy\"", requestBody);
+        Assert.Contains("\"voice\":\"coral\"", requestBody);
         Assert.Contains("\"response_format\":\"mp3\"", requestBody);
+    }
+
+    [Fact]
+    public async Task CreateSpeechRequestFallsBackToDefaultVoiceForUnsupportedVoice()
+    {
+        using HttpRequestMessage request = OpenAIRequestFactory.CreateSpeechRequest("sk-test", "hello", "not-a-voice");
+
+        string requestBody = await request.Content!.ReadAsStringAsync();
+
+        Assert.Contains("\"voice\":\"coral\"", requestBody);
     }
 
     [Fact]
