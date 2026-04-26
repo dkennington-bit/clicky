@@ -1,12 +1,11 @@
-using System.Drawing;
-using System.Windows;
 using Clicky.Windows.Models;
+using WpfPoint = System.Windows.Point;
 
 namespace Clicky.Windows.Services;
 
 public static class CoordinateMapper
 {
-    public static Point MapScreenshotPixelToOverlayPoint(
+    public static WpfPoint MapScreenshotPixelToOverlayPoint(
         PointTagResult pointTagResult,
         CapturedDisplayImage capturedDisplayImage,
         double overlayWidthInDeviceIndependentPixels,
@@ -14,31 +13,31 @@ public static class CoordinateMapper
     {
         if (!pointTagResult.ShouldPoint)
         {
-            return new Point(0, 0);
+        return new WpfPoint(0, 0);
         }
 
         double normalizedX = Clamp(pointTagResult.X / (double)Math.Max(1, capturedDisplayImage.ScreenshotWidthInPixels), 0, 1);
         double normalizedY = Clamp(pointTagResult.Y / (double)Math.Max(1, capturedDisplayImage.ScreenshotHeightInPixels), 0, 1);
 
-        return new Point(
+        return new WpfPoint(
             normalizedX * overlayWidthInDeviceIndependentPixels,
             normalizedY * overlayHeightInDeviceIndependentPixels);
     }
 
-    public static Point MapScreenshotPixelToScreenPixel(
+    public static WpfPoint MapScreenshotPixelToScreenPixel(
         PointTagResult pointTagResult,
         CapturedDisplayImage capturedDisplayImage)
     {
         if (!pointTagResult.ShouldPoint)
         {
-            return new Point(0, 0);
+            return new WpfPoint(0, 0);
         }
 
         double normalizedX = Clamp(pointTagResult.X / (double)Math.Max(1, capturedDisplayImage.ScreenshotWidthInPixels), 0, 1);
         double normalizedY = Clamp(pointTagResult.Y / (double)Math.Max(1, capturedDisplayImage.ScreenshotHeightInPixels), 0, 1);
         Rectangle screenPixelBounds = capturedDisplayImage.PixelBounds;
 
-        return new Point(
+        return new WpfPoint(
             screenPixelBounds.Left + normalizedX * screenPixelBounds.Width,
             screenPixelBounds.Top + normalizedY * screenPixelBounds.Height);
     }

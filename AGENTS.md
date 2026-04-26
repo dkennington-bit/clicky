@@ -126,7 +126,7 @@ cd windows\Clicky.Windows
 dotnet restore
 dotnet build
 dotnet run --project src\Clicky.Windows\Clicky.Windows.csproj
-dotnet test
+dotnet test tests\Clicky.Windows.Tests\Clicky.Windows.Tests.csproj
 ```
 
 Windows requires the .NET 8 SDK and an OpenAI API key entered through the Clicky tray panel. The key is stored in Windows Credential Manager as `Clicky.OpenAI.ApiKey`.

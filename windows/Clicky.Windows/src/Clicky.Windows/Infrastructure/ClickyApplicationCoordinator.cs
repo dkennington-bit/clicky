@@ -8,6 +8,7 @@ using Clicky.Windows.Security;
 using Clicky.Windows.Services;
 using Clicky.Windows.Settings;
 using Clicky.Windows.UI;
+using WpfApplication = System.Windows.Application;
 
 namespace Clicky.Windows.Infrastructure;
 
@@ -188,22 +189,22 @@ public sealed class ClickyApplicationCoordinator : IDisposable
 
     private void HandleQuitRequested(object? sender, EventArgs eventArguments)
     {
-        Application.Current.Shutdown();
+        WpfApplication.Current.Shutdown();
     }
 
     private void HandlePushToTalkPressed(object? sender, EventArgs eventArguments)
     {
-        _ = Application.Current.Dispatcher.InvokeAsync(async () => await StartPushToTalkAsync());
+        _ = WpfApplication.Current.Dispatcher.InvokeAsync(async () => await StartPushToTalkAsync());
     }
 
     private void HandlePushToTalkReleased(object? sender, EventArgs eventArguments)
     {
-        _ = Application.Current.Dispatcher.InvokeAsync(async () => await StopPushToTalkAndRespondAsync());
+        _ = WpfApplication.Current.Dispatcher.InvokeAsync(async () => await StopPushToTalkAndRespondAsync());
     }
 
     private void HandleAudioLevelChanged(object? sender, double normalizedAudioLevel)
     {
-        _ = Application.Current.Dispatcher.InvokeAsync(() =>
+        _ = WpfApplication.Current.Dispatcher.InvokeAsync(() =>
         {
             overlayWindowManager.SetAudioLevel(normalizedAudioLevel);
         });
@@ -319,7 +320,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
                 transcript,
                 async accumulatedText =>
                 {
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    await WpfApplication.Current.Dispatcher.InvokeAsync(() =>
                     {
                         currentResponse = accumulatedText;
                         overlayWindowManager.SetResponseText(accumulatedText);

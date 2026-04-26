@@ -41,7 +41,7 @@ Run the Windows unit tests with:
 
 ```powershell
 cd windows\Clicky.Windows
-dotnet test
+dotnet test tests\Clicky.Windows.Tests\Clicky.Windows.Tests.csproj
 ```
 
 ## Get started with Claude Code

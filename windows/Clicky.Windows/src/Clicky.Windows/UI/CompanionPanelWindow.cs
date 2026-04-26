@@ -3,6 +3,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Clicky.Windows.Models;
+using WpfButton = System.Windows.Controls.Button;
+using WpfCheckBox = System.Windows.Controls.CheckBox;
+using WpfBrushes = System.Windows.Media.Brushes;
+using WpfColor = System.Windows.Media.Color;
+using WpfCursors = System.Windows.Input.Cursors;
+using WpfOrientation = System.Windows.Controls.Orientation;
 using WinForms = System.Windows.Forms;
 
 namespace Clicky.Windows.UI;
@@ -14,7 +20,7 @@ public sealed class CompanionPanelWindow : Window
     private readonly TextBlock responseTextBlock = new();
     private readonly TextBlock apiKeyStatusTextBlock = new();
     private readonly PasswordBox apiKeyPasswordBox = new();
-    private readonly CheckBox showCursorCheckBox = new();
+    private readonly WpfCheckBox showCursorCheckBox = new();
     private bool isUpdatingState;
 
     public event EventHandler<string>? SaveApiKeyRequested;
@@ -27,7 +33,7 @@ public sealed class CompanionPanelWindow : Window
         WindowStyle = WindowStyle.None;
         ResizeMode = ResizeMode.NoResize;
         AllowsTransparency = true;
-        Background = Brushes.Transparent;
+        Background = WpfBrushes.Transparent;
         ShowInTaskbar = false;
         Topmost = true;
         Width = 380;
@@ -83,8 +89,8 @@ public sealed class CompanionPanelWindow : Window
         var border = new Border
         {
             CornerRadius = new CornerRadius(14),
-            Background = new SolidColorBrush(Color.FromRgb(17, 24, 39)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(55, 65, 81)),
+            Background = new SolidColorBrush(WpfColor.FromRgb(17, 24, 39)),
+            BorderBrush = new SolidColorBrush(WpfColor.FromRgb(55, 65, 81)),
             BorderThickness = new Thickness(1),
             Padding = new Thickness(18),
             Effect = new System.Windows.Media.Effects.DropShadowEffect
@@ -102,31 +108,31 @@ public sealed class CompanionPanelWindow : Window
         stackPanel.Children.Add(new TextBlock
         {
             Text = "Clicky",
-            Foreground = Brushes.White,
+            Foreground = WpfBrushes.White,
             FontWeight = FontWeights.SemiBold,
             FontSize = 24
         });
 
-        statusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(96, 165, 250));
+        statusTextBlock.Foreground = new SolidColorBrush(WpfColor.FromRgb(96, 165, 250));
         statusTextBlock.FontSize = 13;
         statusTextBlock.Margin = new Thickness(0, 2, 0, 18);
         stackPanel.Children.Add(statusTextBlock);
 
         stackPanel.Children.Add(CreateSectionLabel("openai key"));
-        apiKeyStatusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(209, 213, 219));
+        apiKeyStatusTextBlock.Foreground = new SolidColorBrush(WpfColor.FromRgb(209, 213, 219));
         apiKeyStatusTextBlock.Margin = new Thickness(0, 0, 0, 8);
         stackPanel.Children.Add(apiKeyStatusTextBlock);
 
         apiKeyPasswordBox.Height = 34;
         apiKeyPasswordBox.Margin = new Thickness(0, 0, 0, 8);
-        apiKeyPasswordBox.Background = new SolidColorBrush(Color.FromRgb(31, 41, 55));
-        apiKeyPasswordBox.Foreground = Brushes.White;
-        apiKeyPasswordBox.BorderBrush = new SolidColorBrush(Color.FromRgb(75, 85, 99));
+        apiKeyPasswordBox.Background = new SolidColorBrush(WpfColor.FromRgb(31, 41, 55));
+        apiKeyPasswordBox.Foreground = WpfBrushes.White;
+        apiKeyPasswordBox.BorderBrush = new SolidColorBrush(WpfColor.FromRgb(75, 85, 99));
         stackPanel.Children.Add(apiKeyPasswordBox);
 
         var apiKeyButtonPanel = new StackPanel
         {
-            Orientation = Orientation.Horizontal,
+            Orientation = WpfOrientation.Horizontal,
             Margin = new Thickness(0, 0, 0, 16)
         };
         apiKeyButtonPanel.Children.Add(CreateButton("save key", () =>
@@ -138,7 +144,7 @@ public sealed class CompanionPanelWindow : Window
         stackPanel.Children.Add(apiKeyButtonPanel);
 
         showCursorCheckBox.Content = "show clicky cursor";
-        showCursorCheckBox.Foreground = Brushes.White;
+        showCursorCheckBox.Foreground = WpfBrushes.White;
         showCursorCheckBox.Margin = new Thickness(0, 0, 0, 18);
         showCursorCheckBox.Checked += (_, _) =>
         {
@@ -160,19 +166,19 @@ public sealed class CompanionPanelWindow : Window
         stackPanel.Children.Add(new TextBlock
         {
             Text = "hold Ctrl+Alt, speak, then release",
-            Foreground = new SolidColorBrush(Color.FromRgb(209, 213, 219)),
+            Foreground = new SolidColorBrush(WpfColor.FromRgb(209, 213, 219)),
             Margin = new Thickness(0, 0, 0, 16)
         });
 
         stackPanel.Children.Add(CreateSectionLabel("last transcript"));
-        transcriptTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(229, 231, 235));
+        transcriptTextBlock.Foreground = new SolidColorBrush(WpfColor.FromRgb(229, 231, 235));
         transcriptTextBlock.TextWrapping = TextWrapping.Wrap;
         transcriptTextBlock.Margin = new Thickness(0, 0, 0, 14);
         transcriptTextBlock.MaxHeight = 70;
         stackPanel.Children.Add(transcriptTextBlock);
 
         stackPanel.Children.Add(CreateSectionLabel("response"));
-        responseTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(229, 231, 235));
+        responseTextBlock.Foreground = new SolidColorBrush(WpfColor.FromRgb(229, 231, 235));
         responseTextBlock.TextWrapping = TextWrapping.Wrap;
         responseTextBlock.MaxHeight = 100;
         stackPanel.Children.Add(responseTextBlock);
@@ -181,7 +187,7 @@ public sealed class CompanionPanelWindow : Window
         {
             Margin = new Thickness(0, 18, 0, 0)
         };
-        Button quitButton = CreateButton("quit", () => QuitRequested?.Invoke(this, EventArgs.Empty));
+        WpfButton quitButton = CreateButton("quit", () => QuitRequested?.Invoke(this, EventArgs.Empty));
         DockPanel.SetDock(quitButton, Dock.Right);
         footerPanel.Children.Add(quitButton);
         stackPanel.Children.Add(footerPanel);
@@ -194,26 +200,26 @@ public sealed class CompanionPanelWindow : Window
         return new TextBlock
         {
             Text = text,
-            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            Foreground = new SolidColorBrush(WpfColor.FromRgb(148, 163, 184)),
             FontSize = 11,
             FontWeight = FontWeights.SemiBold,
             Margin = new Thickness(0, 0, 0, 6)
         };
     }
 
-    private static Button CreateButton(string text, Action action)
+    private static WpfButton CreateButton(string text, Action action)
     {
-        var button = new Button
+        var button = new WpfButton
         {
             Content = text,
             MinWidth = 74,
             Height = 32,
             Margin = new Thickness(0, 0, 8, 0),
             Padding = new Thickness(10, 0, 10, 0),
-            Cursor = Cursors.Hand,
-            Background = new SolidColorBrush(Color.FromRgb(37, 99, 235)),
-            Foreground = Brushes.White,
-            BorderBrush = new SolidColorBrush(Color.FromRgb(59, 130, 246))
+            Cursor = WpfCursors.Hand,
+            Background = new SolidColorBrush(WpfColor.FromRgb(37, 99, 235)),
+            Foreground = WpfBrushes.White,
+            BorderBrush = new SolidColorBrush(WpfColor.FromRgb(59, 130, 246))
         };
         button.Click += (_, _) => action();
         return button;

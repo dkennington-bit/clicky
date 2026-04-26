@@ -7,6 +7,9 @@ using Clicky.Windows.Infrastructure;
 using DrawingRectangle = System.Drawing.Rectangle;
 using Point = System.Windows.Point;
 using ShapeRectangle = System.Windows.Shapes.Rectangle;
+using WpfBrushes = System.Windows.Media.Brushes;
+using WpfColor = System.Windows.Media.Color;
+using WpfOrientation = System.Windows.Controls.Orientation;
 using WinForms = System.Windows.Forms;
 
 namespace Clicky.Windows.UI;
@@ -33,7 +36,7 @@ public sealed class OverlayWindow : Window
 
         WindowStyle = WindowStyle.None;
         AllowsTransparency = true;
-        Background = Brushes.Transparent;
+        Background = WpfBrushes.Transparent;
         ShowInTaskbar = false;
         Topmost = true;
         ResizeMode = ResizeMode.NoResize;
@@ -242,13 +245,13 @@ public sealed class OverlayWindow : Window
             new(8, 36),
             new(0, 52)
         };
-        cursorTriangle.Fill = new SolidColorBrush(Color.FromRgb(48, 144, 255));
-        cursorTriangle.Stroke = Brushes.White;
+        cursorTriangle.Fill = new SolidColorBrush(WpfColor.FromRgb(48, 144, 255));
+        cursorTriangle.Stroke = WpfBrushes.White;
         cursorTriangle.StrokeThickness = 1.2;
         cursorTriangle.RenderTransform = new RotateTransform(-35, 9, 26);
         cursorTriangle.Effect = new System.Windows.Media.Effects.DropShadowEffect
         {
-            Color = Color.FromRgb(48, 144, 255),
+            Color = WpfColor.FromRgb(48, 144, 255),
             BlurRadius = 14,
             Opacity = 0.65
         };
@@ -257,7 +260,7 @@ public sealed class OverlayWindow : Window
 
     private void BuildResponseBubble()
     {
-        responseTextBlock.Foreground = Brushes.White;
+        responseTextBlock.Foreground = WpfBrushes.White;
         responseTextBlock.FontSize = 13;
         responseTextBlock.TextWrapping = TextWrapping.Wrap;
         responseTextBlock.MaxWidth = 320;
@@ -266,8 +269,8 @@ public sealed class OverlayWindow : Window
         responseBubble.Child = responseTextBlock;
         responseBubble.Padding = new Thickness(12, 9, 12, 10);
         responseBubble.CornerRadius = new CornerRadius(8);
-        responseBubble.Background = new SolidColorBrush(Color.FromArgb(238, 17, 24, 39));
-        responseBubble.BorderBrush = new SolidColorBrush(Color.FromArgb(90, 148, 163, 184));
+        responseBubble.Background = new SolidColorBrush(WpfColor.FromArgb(238, 17, 24, 39));
+        responseBubble.BorderBrush = new SolidColorBrush(WpfColor.FromArgb(90, 148, 163, 184));
         responseBubble.BorderThickness = new Thickness(1);
         responseBubble.Visibility = Visibility.Collapsed;
         responseBubble.MaxWidth = 360;
@@ -284,7 +287,7 @@ public sealed class OverlayWindow : Window
 
     private void BuildWaveform()
     {
-        waveformStackPanel.Orientation = Orientation.Horizontal;
+        waveformStackPanel.Orientation = WpfOrientation.Horizontal;
         waveformStackPanel.VerticalAlignment = VerticalAlignment.Center;
         waveformStackPanel.Visibility = Visibility.Collapsed;
 
@@ -296,7 +299,7 @@ public sealed class OverlayWindow : Window
                 Height = 12,
                 RadiusX = 1.5,
                 RadiusY = 1.5,
-                Fill = new SolidColorBrush(Color.FromRgb(48, 144, 255)),
+                Fill = new SolidColorBrush(WpfColor.FromRgb(48, 144, 255)),
                 Margin = new Thickness(2, 0, 2, 0)
             });
         }
@@ -309,7 +312,7 @@ public sealed class OverlayWindow : Window
         spinnerEllipse.Width = 18;
         spinnerEllipse.Height = 18;
         spinnerEllipse.StrokeThickness = 3;
-        spinnerEllipse.Stroke = new SolidColorBrush(Color.FromRgb(48, 144, 255));
+        spinnerEllipse.Stroke = new SolidColorBrush(WpfColor.FromRgb(48, 144, 255));
         spinnerEllipse.Visibility = Visibility.Collapsed;
         rootCanvas.Children.Add(spinnerEllipse);
     }

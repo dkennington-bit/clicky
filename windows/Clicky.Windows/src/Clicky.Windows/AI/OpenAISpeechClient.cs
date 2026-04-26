@@ -1,3 +1,5 @@
+using System.IO;
+using System.Net.Http;
 using System.Net;
 using Clicky.Windows.Services;
 using NAudio.Wave;

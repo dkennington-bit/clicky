@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Net.Http.Headers;
 using Clicky.Windows.AI;
 using Clicky.Windows.Models;
