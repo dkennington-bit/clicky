@@ -9,6 +9,41 @@ Here's the [original tweet](https://x.com/FarzaTV/status/2041314633978659092) th
 
 This is the open-source version of Clicky for those that want to hack on it, build their own features, or just see how it works under the hood.
 
+## Windows version
+
+This repo now includes a side-by-side Windows rewrite in `windows/Clicky.Windows`. It is a native .NET WPF tray app that uses OpenAI directly instead of the Cloudflare Worker.
+
+### Windows prerequisites
+
+- Windows 10 2004+ or Windows 11
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- An OpenAI API key
+- A microphone
+
+### Run the Windows app
+
+```powershell
+cd windows\Clicky.Windows
+dotnet restore
+dotnet build
+dotnet run --project src\Clicky.Windows\Clicky.Windows.csproj
+```
+
+The app appears in the Windows notification area. Open the panel, save your OpenAI key, then hold **Ctrl+Alt** to talk. The key is stored locally in Windows Credential Manager under `Clicky.OpenAI.ApiKey`.
+
+### Windows AI stack
+
+- Vision/chat: OpenAI Responses API with `gpt-5.5`
+- Speech-to-text: OpenAI Audio Transcriptions with `gpt-4o-mini-transcribe`
+- Text-to-speech: OpenAI Audio Speech with `gpt-4o-mini-tts`, default voice `coral`
+
+Run the Windows unit tests with:
+
+```powershell
+cd windows\Clicky.Windows
+dotnet test
+```
+
 ## Get started with Claude Code
 
 The fastest way to get this running is with [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
@@ -142,6 +177,9 @@ leanring-buddy/          # Swift source (yes, the typo stays)
   BuddyDictation*.swift     # Push-to-talk pipeline
 worker/                  # Cloudflare Worker proxy
   src/index.ts              # Three routes: /chat, /tts, /transcribe-token
+windows/Clicky.Windows/  # Windows WPF rewrite using OpenAI directly
+  src/Clicky.Windows/       # Tray app, overlay, hotkey, screen capture, OpenAI clients
+  tests/Clicky.Windows.Tests/ # Unit tests for parsing, mapping, request payloads, key-store contract
 CLAUDE.md                # Full architecture doc (agents read this)
 ```
 
