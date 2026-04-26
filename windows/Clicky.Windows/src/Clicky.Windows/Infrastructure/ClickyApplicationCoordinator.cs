@@ -2,6 +2,7 @@ using System.Windows;
 using Clicky.Windows.AI;
 using Clicky.Windows.Audio;
 using Clicky.Windows.Input;
+using Clicky.Windows.Logging;
 using Clicky.Windows.Models;
 using Clicky.Windows.ScreenCapture;
 using Clicky.Windows.Security;
@@ -59,6 +60,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         this.companionPanelWindow = companionPanelWindow;
         this.trayIconService = trayIconService;
         clickyUserSettings = userSettingsStore.Load();
+        ClickyLogger.Info("Application coordinator created.");
     }
 
     public static ClickyApplicationCoordinator CreateDefault()
@@ -94,16 +96,19 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         globalPushToTalkHotkeyListener.PushToTalkPressed += HandlePushToTalkPressed;
         globalPushToTalkHotkeyListener.PushToTalkReleased += HandlePushToTalkReleased;
         globalPushToTalkHotkeyListener.Start();
+        ClickyLogger.Info($"Application started. Log file: {ClickyLogger.CurrentLogFilePath}");
 
         if (clickyUserSettings.IsCursorOverlayEnabled)
         {
             overlayWindowManager.Show();
+            ClickyLogger.Info("Cursor overlay shown on startup.");
         }
 
         if (string.IsNullOrWhiteSpace(openAIApiKeyStore.ReadApiKey()))
         {
             statusMessage = "add your OpenAI API key to start";
             companionPanelWindow.ShowNearCursor();
+            ClickyLogger.Info("No OpenAI API key found. Showing setup panel.");
         }
 
         UpdatePanelState();
@@ -154,10 +159,12 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         {
             openAIApiKeyStore.SaveApiKey(apiKey.Trim());
             statusMessage = "OpenAI key saved";
+            ClickyLogger.Info("OpenAI API key saved.");
         }
         catch (Exception exception)
         {
             statusMessage = exception.Message;
+            ClickyLogger.Error("Failed to save OpenAI API key.", exception);
         }
 
         UpdatePanelState();
@@ -167,6 +174,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
     {
         openAIApiKeyStore.DeleteApiKey();
         statusMessage = "OpenAI key removed";
+        ClickyLogger.Info("OpenAI API key removed.");
         UpdatePanelState();
     }
 
@@ -178,10 +186,12 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         if (isEnabled)
         {
             overlayWindowManager.Show();
+            ClickyLogger.Info("Cursor overlay enabled.");
         }
         else
         {
             overlayWindowManager.Hide();
+            ClickyLogger.Info("Cursor overlay disabled.");
         }
 
         UpdatePanelState();
@@ -216,6 +226,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             statusMessage = "add your OpenAI API key before talking";
+            ClickyLogger.Info("Push-to-talk ignored because no OpenAI API key is saved.");
             trayIconService.ShowNotification("Clicky needs an OpenAI key", "Open the panel and save your API key.");
             companionPanelWindow.ShowNearCursor();
             UpdatePanelState();
@@ -230,6 +241,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         currentResponse = string.Empty;
         statusMessage = null;
         voiceState = CompanionVoiceState.Listening;
+        ClickyLogger.Info("Push-to-talk started.");
 
         if (clickyUserSettings.IsCursorOverlayEnabled && !overlayWindowManager.IsVisible)
         {
@@ -247,6 +259,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         catch (Exception exception)
         {
             statusMessage = $"microphone error: {exception.Message}";
+            ClickyLogger.Error("Microphone recording failed to start.", exception);
             voiceState = CompanionVoiceState.Idle;
             overlayWindowManager.SetIdle();
             UpdatePanelState();
@@ -268,6 +281,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         catch (Exception exception)
         {
             statusMessage = $"audio capture failed: {exception.Message}";
+            ClickyLogger.Error("Microphone recording failed to stop.", exception);
             voiceState = CompanionVoiceState.Idle;
             overlayWindowManager.SetIdle();
             UpdatePanelState();
@@ -283,6 +297,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             statusMessage = "add your OpenAI API key before talking";
+            ClickyLogger.Info("Captured audio ignored because no OpenAI API key is saved.");
             voiceState = CompanionVoiceState.Idle;
             overlayWindowManager.SetIdle();
             UpdatePanelState();
@@ -295,11 +310,13 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         {
             voiceState = CompanionVoiceState.Processing;
             statusMessage = "transcribing";
+            ClickyLogger.Info($"Processing captured audio. WAV bytes: {wavAudioBytes.Length}.");
             overlayWindowManager.SetProcessing();
             UpdatePanelState();
 
             string transcript = await openAITranscriptionClient.TranscribePushToTalkAsync(apiKey, wavAudioBytes, cancellationToken);
             lastTranscript = transcript;
+            ClickyLogger.Interaction($"User transcript: {transcript}");
 
             statusMessage = "capturing screen";
             UpdatePanelState();
@@ -307,6 +324,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
                 screenCaptureService,
                 companionPanelWindow,
                 cancellationToken);
+            ClickyLogger.Info($"Captured {capturedDisplayImages.Count} display image(s): {string.Join("; ", capturedDisplayImages.Select(displayImage => $"{displayImage.ScreenNumber}:{displayImage.ScreenshotWidthInPixels}x{displayImage.ScreenshotHeightInPixels} cursor={displayImage.IsCursorScreen}"))}.");
 
             voiceState = CompanionVoiceState.Responding;
             statusMessage = "thinking";
@@ -331,6 +349,8 @@ public sealed class ClickyApplicationCoordinator : IDisposable
 
             currentResponse = visionTurnResult.SpokenResponseText;
             conversationHistory.Add(new ConversationTurn(transcript, visionTurnResult.SpokenResponseText));
+            ClickyLogger.Interaction($"Assistant response: {visionTurnResult.SpokenResponseText}");
+            ClickyLogger.Info($"Point tag: shouldPoint={visionTurnResult.PointTagResult.ShouldPoint}, x={visionTurnResult.PointTagResult.X}, y={visionTurnResult.PointTagResult.Y}, label={visionTurnResult.PointTagResult.Label}, screen={visionTurnResult.PointTagResult.ScreenNumber?.ToString() ?? "cursor"}.");
 
             statusMessage = "speaking";
             UpdatePanelState();
@@ -344,6 +364,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
             }
 
             statusMessage = "ready";
+            ClickyLogger.Info("Interaction completed successfully.");
             voiceState = CompanionVoiceState.Idle;
             overlayWindowManager.SetIdle();
             overlayWindowManager.SetResponseText(string.Empty);
@@ -352,6 +373,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         catch (OperationCanceledException)
         {
             statusMessage = "cancelled";
+            ClickyLogger.Info("Interaction cancelled.");
             voiceState = CompanionVoiceState.Idle;
             overlayWindowManager.SetIdle();
             UpdatePanelState();
@@ -359,6 +381,7 @@ public sealed class ClickyApplicationCoordinator : IDisposable
         catch (Exception exception)
         {
             statusMessage = exception.Message;
+            ClickyLogger.Error("Interaction failed.", exception);
             voiceState = CompanionVoiceState.Idle;
             overlayWindowManager.SetIdle();
             overlayWindowManager.SetResponseText(statusMessage);

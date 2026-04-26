@@ -31,6 +31,12 @@ dotnet run --project src\Clicky.Windows\Clicky.Windows.csproj
 
 The app appears in the Windows notification area. Open the panel, save your OpenAI key, then hold **Ctrl+Alt** to talk. The key is stored locally in Windows Credential Manager under `Clicky.OpenAI.ApiKey`.
 
+Runtime logs are written to:
+
+```powershell
+$env:APPDATA\Clicky.Windows\logs\current.log
+```
+
 ### Windows AI stack
 
 - Vision/chat: OpenAI Responses API with `gpt-5.5`

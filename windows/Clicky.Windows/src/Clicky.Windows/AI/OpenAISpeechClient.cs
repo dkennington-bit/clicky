@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Net;
+using Clicky.Windows.Logging;
 using Clicky.Windows.Services;
 using NAudio.Wave;
 
@@ -40,6 +41,7 @@ public sealed class OpenAISpeechClient : IOpenAISpeechClient, IDisposable
         using HttpRequestMessage request = OpenAIRequestFactory.CreateSpeechRequest(apiKey, text);
         using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
         byte[] audioBytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        ClickyLogger.Info($"OpenAI speech HTTP {(int)response.StatusCode}. MP3 bytes: {audioBytes.Length}.");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -49,7 +51,7 @@ public sealed class OpenAISpeechClient : IOpenAISpeechClient, IDisposable
                 response.StatusCode);
         }
 
-        await PlayWaveAudioAsync(audioBytes, cancellationToken);
+        await PlayMp3AudioAsync(audioBytes, cancellationToken);
     }
 
     public void StopPlayback()
@@ -71,14 +73,14 @@ public sealed class OpenAISpeechClient : IOpenAISpeechClient, IDisposable
         httpClient.Dispose();
     }
 
-    private async Task PlayWaveAudioAsync(byte[] audioBytes, CancellationToken cancellationToken)
+    private async Task PlayMp3AudioAsync(byte[] audioBytes, CancellationToken cancellationToken)
     {
         var playbackCompletedTaskCompletionSource = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
         var audioMemoryStream = new MemoryStream(audioBytes);
-        var waveFileReader = new WaveFileReader(audioMemoryStream);
+        var mp3FileReader = new Mp3FileReader(audioMemoryStream);
         var waveOutEvent = new WaveOutEvent();
 
-        waveOutEvent.Init(waveFileReader);
+        waveOutEvent.Init(mp3FileReader);
         waveOutEvent.PlaybackStopped += (_, playbackStoppedEventArguments) =>
         {
             if (playbackStoppedEventArguments.Exception is not null)
@@ -93,7 +95,7 @@ public sealed class OpenAISpeechClient : IOpenAISpeechClient, IDisposable
 
         lock (playbackLock)
         {
-            currentWaveStream = waveFileReader;
+            currentWaveStream = mp3FileReader;
             currentWaveOutEvent = waveOutEvent;
         }
 

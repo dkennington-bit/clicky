@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Net;
+using Clicky.Windows.Logging;
 using Clicky.Windows.Services;
 
 namespace Clicky.Windows.AI;
@@ -32,6 +33,7 @@ public sealed class OpenAITranscriptionClient : IOpenAITranscriptionClient, IDis
         using HttpRequestMessage request = OpenAIRequestFactory.CreateTranscriptionRequest(apiKey, wavAudioBytes);
         using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken);
         string responseText = await response.Content.ReadAsStringAsync(cancellationToken);
+        ClickyLogger.Info($"OpenAI transcription HTTP {(int)response.StatusCode}. Response characters: {responseText.Length}.");
 
         if (!response.IsSuccessStatusCode)
         {

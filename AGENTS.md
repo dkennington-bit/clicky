@@ -37,6 +37,7 @@ macOS API keys live on a Cloudflare Worker proxy. The Windows rewrite uses a use
 - **Voice Input**: Ctrl+Alt push-to-talk with a low-level keyboard hook and microphone capture via NAudio
 - **Element Pointing**: GPT appends `[POINT:x,y:label:screenN]` tags. The Windows overlay maps screenshot pixels back to monitor pixels and animates the blue cursor.
 - **API Keys**: User enters an OpenAI API key in the panel. The app stores it in Windows Credential Manager and never logs it.
+- **Logging**: Windows runtime logs are written to `%APPDATA%\Clicky.Windows\logs\current.log`. Logs include statuses, transcripts, assistant responses, HTTP status codes, and exception stack traces, but not API keys or screenshots.
 
 ### API Proxy (Cloudflare Worker)
 
@@ -103,6 +104,7 @@ Worker vars: `ELEVENLABS_VOICE_ID`
 | `windows/Clicky.Windows/src/Clicky.Windows/Input/GlobalPushToTalkHotkeyListener.cs` | ~133 | Installs the low-level Windows keyboard hook for Ctrl+Alt press/release transitions. |
 | `windows/Clicky.Windows/src/Clicky.Windows/ScreenCapture/WindowsScreenCaptureService.cs` | ~70 | Captures JPEG screenshots for all connected Windows displays and labels the cursor screen as primary focus. |
 | `windows/Clicky.Windows/src/Clicky.Windows/Security/CredentialManagerOpenAIApiKeyStore.cs` | ~117 | Stores, reads, and deletes the OpenAI key via Windows Credential Manager. |
+| `windows/Clicky.Windows/src/Clicky.Windows/Logging/ClickyLogger.cs` | ~52 | Writes rotating runtime logs to `%APPDATA%\Clicky.Windows\logs\current.log` for debugging local interaction failures. |
 | `windows/Clicky.Windows/tests/Clicky.Windows.Tests/*.cs` | ~230 | Unit tests for point-tag parsing, coordinate mapping, OpenAI payload construction, and API-key store contract behavior. |
 
 ## Build & Run

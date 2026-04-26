@@ -50,7 +50,7 @@ public sealed class OpenAIRequestFactoryTests
         Assert.Equal(new AuthenticationHeaderValue("Bearer", "sk-test"), request.Headers.Authorization);
         Assert.Contains("\"model\":\"gpt-4o-mini-tts\"", requestBody);
         Assert.Contains("\"voice\":\"coral\"", requestBody);
-        Assert.Contains("\"response_format\":\"wav\"", requestBody);
+        Assert.Contains("\"response_format\":\"mp3\"", requestBody);
     }
 
     [Fact]

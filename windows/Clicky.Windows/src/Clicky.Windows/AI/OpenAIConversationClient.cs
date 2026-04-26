@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Clicky.Windows.Logging;
 using Clicky.Windows.Models;
 using Clicky.Windows.Services;
 
@@ -44,6 +45,7 @@ public sealed class OpenAIConversationClient : IOpenAIConversationClient, IDispo
             request,
             HttpCompletionOption.ResponseHeadersRead,
             cancellationToken);
+        ClickyLogger.Info($"OpenAI vision HTTP {(int)response.StatusCode}.");
 
         if (!response.IsSuccessStatusCode)
         {
@@ -86,6 +88,7 @@ public sealed class OpenAIConversationClient : IOpenAIConversationClient, IDispo
 
         PointTagResult pointTagResult = pointTagParser.Parse(accumulatedResponseText);
         string spokenResponseText = pointTagParser.RemovePointTag(accumulatedResponseText);
+        ClickyLogger.Info($"OpenAI vision stream completed. Response characters: {accumulatedResponseText.Length}.");
 
         return new VisionTurnResult(
             FullResponseText: accumulatedResponseText,

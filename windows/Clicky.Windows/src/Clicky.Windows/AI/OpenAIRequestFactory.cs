@@ -95,7 +95,7 @@ public static class OpenAIRequestFactory
             voice = DefaultVoice,
             input = text,
             instructions = CompanionPrompts.SpeechInstructions,
-            response_format = "wav"
+            response_format = "mp3"
         };
 
         return CreateJsonRequest(HttpMethod.Post, "https://api.openai.com/v1/audio/speech", apiKey, requestBody);

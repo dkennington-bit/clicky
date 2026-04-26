@@ -241,14 +241,15 @@ public sealed class OverlayWindow : Window
         cursorTriangle.Points = new PointCollection
         {
             new(0, 0),
-            new(18, 44),
-            new(8, 36),
-            new(0, 52)
+            new(30, 42),
+            new(6, 34)
         };
         cursorTriangle.Fill = new SolidColorBrush(WpfColor.FromRgb(48, 144, 255));
         cursorTriangle.Stroke = WpfBrushes.White;
-        cursorTriangle.StrokeThickness = 1.2;
-        cursorTriangle.RenderTransform = new RotateTransform(-35, 9, 26);
+        cursorTriangle.StrokeThickness = 1.6;
+        cursorTriangle.StrokeLineJoin = PenLineJoin.Round;
+        cursorTriangle.Stretch = Stretch.None;
+        cursorTriangle.RenderTransform = new RotateTransform(-35, 12, 20);
         cursorTriangle.Effect = new System.Windows.Media.Effects.DropShadowEffect
         {
             Color = WpfColor.FromRgb(48, 144, 255),
