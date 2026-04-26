@@ -41,7 +41,7 @@ $env:APPDATA\Clicky.Windows\logs\current.log
 
 - Vision/chat: OpenAI Responses API with `gpt-5.5`
 - Speech-to-text: OpenAI Audio Transcriptions with `gpt-4o-mini-transcribe`
-- Text-to-speech: OpenAI Audio Speech with `gpt-4o-mini-tts`, default voice `coral`
+- Text-to-speech: OpenAI Audio Speech with `gpt-4o-mini-tts`, default voice `alloy`
 
 Run the Windows unit tests with:
 

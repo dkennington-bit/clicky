@@ -32,7 +32,7 @@ macOS API keys live on a Cloudflare Worker proxy. The Windows rewrite uses a use
 - **Framework**: .NET 8 WPF with Windows Forms `NotifyIcon` for the tray
 - **AI Chat**: OpenAI Responses API using `gpt-5.5` with streamed SSE text and screenshot image inputs
 - **Speech-to-Text**: OpenAI Audio Transcriptions using `gpt-4o-mini-transcribe`
-- **Text-to-Speech**: OpenAI Audio Speech using `gpt-4o-mini-tts` with default voice `coral`, played with NAudio
+- **Text-to-Speech**: OpenAI Audio Speech using `gpt-4o-mini-tts` with default voice `alloy`, played with NAudio
 - **Screen Capture**: GDI screen capture across all connected Windows displays
 - **Voice Input**: Ctrl+Alt push-to-talk with a low-level keyboard hook and microphone capture via NAudio
 - **Element Pointing**: GPT appends `[POINT:x,y:label:screenN]` tags. The Windows overlay maps screenshot pixels back to monitor pixels and animates the blue cursor.

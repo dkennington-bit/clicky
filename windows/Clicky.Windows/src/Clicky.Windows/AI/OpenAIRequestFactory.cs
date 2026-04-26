@@ -11,7 +11,7 @@ public static class OpenAIRequestFactory
     public const string VisionModel = "gpt-5.5";
     public const string TranscriptionModel = "gpt-4o-mini-transcribe";
     public const string SpeechModel = "gpt-4o-mini-tts";
-    public const string DefaultVoice = "coral";
+    public const string DefaultVoice = "alloy";
 
     public static HttpRequestMessage CreateVisionRequest(
         string apiKey,
