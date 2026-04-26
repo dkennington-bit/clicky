@@ -28,7 +28,7 @@ public sealed class OverlayWindow : Window
 
     private Point currentCursorPoint = new(80, 80);
     private double spinnerRotationDegrees;
-    private bool isPointing;
+    private bool isParkedAtPointTarget;
 
     public OverlayWindow(DrawingRectangle screenPixelBounds)
     {
@@ -70,6 +70,7 @@ public sealed class OverlayWindow : Window
 
     public void StartFollowingCursor()
     {
+        isParkedAtPointTarget = false;
         cursorFollowTimer.Start();
     }
 
@@ -88,6 +89,8 @@ public sealed class OverlayWindow : Window
 
     public void SetListening()
     {
+        isParkedAtPointTarget = false;
+        cursorFollowTimer.Start();
         spinnerTimer.Stop();
         cursorTriangle.Visibility = Visibility.Collapsed;
         waveformStackPanel.Visibility = Visibility.Visible;
@@ -137,7 +140,7 @@ public sealed class OverlayWindow : Window
 
     public async Task PointAtScreenPixelAsync(Point targetScreenPixel, string label, CancellationToken cancellationToken)
     {
-        isPointing = true;
+        isParkedAtPointTarget = false;
         StopFollowingCursor();
         SetResponding();
 
@@ -161,14 +164,12 @@ public sealed class OverlayWindow : Window
         SetResponseText(string.IsNullOrWhiteSpace(label) ? "right here" : label);
         await Task.Delay(TimeSpan.FromSeconds(2.5), cancellationToken);
         SetResponseText(string.Empty);
-
-        isPointing = false;
-        StartFollowingCursor();
+        isParkedAtPointTarget = true;
     }
 
     private void FollowRealCursor()
     {
-        if (isPointing)
+        if (isParkedAtPointTarget)
         {
             return;
         }
@@ -241,15 +242,15 @@ public sealed class OverlayWindow : Window
         cursorTriangle.Points = new PointCollection
         {
             new(0, 0),
-            new(30, 42),
-            new(6, 34)
+            new(28, 14),
+            new(10, 26)
         };
         cursorTriangle.Fill = new SolidColorBrush(WpfColor.FromRgb(48, 144, 255));
         cursorTriangle.Stroke = WpfBrushes.White;
         cursorTriangle.StrokeThickness = 1.6;
         cursorTriangle.StrokeLineJoin = PenLineJoin.Round;
         cursorTriangle.Stretch = Stretch.None;
-        cursorTriangle.RenderTransform = new RotateTransform(-35, 12, 20);
+        cursorTriangle.RenderTransform = new RotateTransform(18, 14, 13);
         cursorTriangle.Effect = new System.Windows.Media.Effects.DropShadowEffect
         {
             Color = WpfColor.FromRgb(48, 144, 255),

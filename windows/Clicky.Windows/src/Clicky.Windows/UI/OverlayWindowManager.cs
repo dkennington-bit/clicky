@@ -94,6 +94,7 @@ public sealed class OverlayWindowManager : IDisposable
     {
         foreach (OverlayWindow overlayWindow in overlayWindows)
         {
+            overlayWindow.StartFollowingCursor();
             overlayWindow.SetListening();
         }
     }
